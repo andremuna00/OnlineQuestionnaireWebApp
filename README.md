@@ -111,7 +111,7 @@
 ### 📥 Setup
 1. Clone the repository:
    ```bash
-   git clone https://github.com/DatabaseLegends/QuestionnaireApp.git
+   git clone https://github.com/andremuna00/OnlineQuestionnaireWebApp.git
    ```
 2. Install dependencies specified in the documentation
 3. Configure `.env` file:
