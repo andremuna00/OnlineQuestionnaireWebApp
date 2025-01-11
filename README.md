@@ -75,7 +75,8 @@
   - Linked to users, forms, and questions.
   - Attributes: Content (text or file).
 
-![image](https://github.com/user-attachments/assets/88bee301-66e9-41e1-be24-09d4e128acce)
+![SchemaConcettuale_DB_Legends](https://github.com/user-attachments/assets/9cefe9b2-6dbd-4526-a570-6cd78b0b731b)
+
 
 ### ⚙️ Logical Design
 - Implemented with **PostgreSQL**.
