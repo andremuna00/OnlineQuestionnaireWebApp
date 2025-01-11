@@ -1,0 +1,165 @@
+{% extends "/security/base.html" %}
+{% block title %}Forms{% endblock %}
+{% block main_title %}Forms List{% endblock %}
+
+{% block content %}
+    <!--Header Page-->
+    <div class="container">
+        <h1>Welcome {{user.name}}</h1>
+        <h4>This is the form: <b>{{form.name}}</b>. </h4>
+        <h6>{{form.description}}</h6>
+        <h4>Here the questions:</h4>
+    </div>
+
+    <!--Form-->
+    <div class="container">
+        <!--Print if there are some flask error messages-->
+        {% with file_error = get_flashed_messages(category_filter=["file_error"]) %}
+          {% if file_error %}
+            <ul>
+            {% for message in file_error %}
+              <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+        <br>
+        <!-- mySubmit() check if multiple_choice question mandatory are blank -->
+        <form action="" onsubmit="return mySubmit()" method="POST" name="form" enctype="multipart/form-data">
+
+            <!--For all the question in the form create:
+                            -open: input text name=q.id
+                            -single: set of input radio name=q.id
+                            -multiple_choice: set of input checkbox name=q.id
+                 Required attribute: only if mandatory
+                 File: only if has_file-->
+            {% for q, m in questions %}
+                    {% if q.open and m.has_file%}<br><br>{%endif%}
+                    <label class="form-label">{{q.text}}{%if m.mandatory %} *{% endif %}</label><br>
+
+                    {% if q.open %}
+                        <input type="text" class="form-control" name="{{q.id}}" {%if m.mandatory %}required{% endif%}>
+
+                        {%if m.has_file%}
+                            <label class="form-label">Select File:</label>
+                            <input type="file" class="form-control" name="file_{{q.id}}" id="file_{{q.id}}" {%if m.mandatory %}required{% endif%}>
+                            <button type="reset" class="form-control" id="cancel">Cancel File</button>
+                            <br><br><br><br>
+                        {%endif%}
+
+                    {% elif q.single %}
+                        {% for q1 in q.single%} <!-- we need to loop in q.single because is a set of 1 element -->
+                            <br>
+                            {% for a in q1.possible_answers%}
+                                <div class="form-check">
+                                    <label class="form-check-label" style="margin-top: 0.28rem;">{{a.content}}</label>
+                                    <input class="form-check-input" type="radio" name="{{q.id}}" value="{{a.content}}" {%if m.mandatory %}required{% endif%}><br><br>
+                                </div>
+                            {% endfor %}
+                            <br>
+                        {% endfor %}
+
+                    {% elif q.multiple_choice %}
+                        {% for q1 in q.multiple_choice%} <!-- we need to loop in q.multiple_choice because is a set of 1 element -->
+                            <br>
+                            {% for a in q1.possible_answers%}
+                                <div class="form-check">
+                                    <label class="form-check-label" style="margin-top: 0.28rem;">{{a.content}}</label>
+                                    <input class="form-check-input" type="checkbox" name="{{q.id}}" value="{{a.content}}"><br><br>
+                                </div>
+                            {% endfor %}
+                            <br>
+                        {% endfor %}
+                    {% endif %}
+
+                <br><br>
+            {% endfor %}
+            <br><br>
+            <input type="submit" value="Submit" class="btn btn-primary">&nbsp;&nbsp;
+            <input type="reset" value="Reset" class="btn btn-secondary"><br><br>
+        </form>
+        <br><br><br>
+    </div>
+
+
+    <script>
+        //Script for cancel files upload
+        var inputElement = document.getElementById("file");
+        var cancelButton = document.getElementById("cancel");
+        var numFiles = 0;
+
+        inputElement.onclick = function(event) {
+          var target = event.target || event.srcElement;
+          console.log(target, "clicked.");
+          console.log(event);
+          if (target.value.length == 0) {
+            console.log("Suspect Cancel was hit, no files selected.");
+            cancelButton.onclick();
+          } else {
+            console.log("File selected: ", target.value);
+            numFiles = target.files.length;
+          }
+        }
+
+        inputElement.onchange = function(event) {
+          var target = event.target || event.srcElement;
+          console.log(target, "changed.");
+          console.log(event);
+          if (target.value.length == 0) {
+            console.log("Suspect Cancel was hit, no files selected.");
+            if (numFiles == target.files.length) {
+              cancelButton.onclick();
+            }
+          } else {
+            console.log("File selected: ", target.value);
+            numFiles = target.files.length;
+          }
+        }
+
+        inputElement.onblur = function(event) {
+          var target = event.target || event.srcElement;
+          console.log(target, "changed.");
+          console.log(event);
+          if (target.value.length == 0) {
+            console.log("Suspect Cancel was hit, no files selected.");
+            if (numFiles == target.files.length) {
+              cancelButton.onclick();
+            }
+          } else {
+            console.log("File selected: ", target.value);
+            numFiles = target.files.length;
+          }
+        }
+
+        cancelButton.onclick = function(event) {
+          console.log("Pseudo Cancel button clicked.");
+        }
+
+
+
+        /* Check mandatory multiple_choice questions */
+        function mySubmit() {
+            {% for q, m in questions%}
+                {%if m.mandatory and q.multiple_choice%}
+                    const radios = document.getElementsByName('{{q.id}}');
+                    let value = '';
+                    for (let i = 0; i < radios.length; i++) {
+                        if (radios[i].type === 'checkbox' && radios[i].checked) {
+                            // get value
+                            value = radios[i].value;
+                        }
+                    }
+                    if(value == ''){
+                        alert("You must fill the mandatory questions first!");
+                        return false;
+                    }
+                    if (document.getElementById('file_{{q.id}}').value === ''){
+                            alert("You must upload all your files first!");
+                            return false;
+                    }
+                {%endif%}
+            {% endfor %}
+            return true;
+        }
+    </script>
+{% endblock %}

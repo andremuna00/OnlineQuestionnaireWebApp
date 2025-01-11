@@ -1,0 +1,29 @@
+{% extends "/security/base.html" %}
+{% block title %}User Profile{% endblock %}
+{% block main_title%}Profile{%endblock main_title%}
+{% block content %}
+    <div class="container">
+    <h1>Welcome {{user.name}}</h1>
+        <h4>These are your profile information</h4>
+    </div>
+
+    <div class="container">
+        <p><b>Name:</b> {{user.name}}</p>
+        <p><b>Surname:</b> {{user.surname}}</p>
+        <p><b>Birthday Date:</b> {{user.date}}</p>
+        <p><b>Username:</b> {{user.username}}</p>
+        <p><b>Email:</b> {{user.email}}</p>
+
+        <form name="edit_form" method="POST">
+            <a href="/profile/edit"><button type="button" class="btn btn-primary">Edit Profile</button></a>&nbsp&nbsp
+            <a href="/change"><button type="button" class="btn btn-primary">Change Password</button></a>&nbsp&nbsp
+            {%if not is_superuser%}
+            <input type="submit" value="DELETE PROFILE" class="btn btn-danger">
+            {%endif%}
+            {%if is_admin%}
+            <a href="/users_info"><button type="button" class="btn btn-green">View users profiles</button></a>&nbsp&nbsp
+            {%endif%}
+        </form>
+        <!--<a href="/logout"><button type="button" class="btn btn-primary">LOGOUT</button></a><br><br>-->
+    </div><br><br><br>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "/security/base.html" %}
+{% block title %}HomePage{% endblock %}
+{% block main_title %}HomePage{% endblock %}
+
+<!--HOMEPAGE: from here you can access:
+             - if you've done the login:
+                    FormList
+                    User Info
+                    Logout
+              - else
+                    Login
+                    Register-->
+{% block content %}
+    <div class="container" style="text-align: center">
+        {%if current_user.is_anonymous: %}
+            <h1>Welcome Anonymous!</h1>
+            <h3>This site allows you to create, manage, share online forms and much more</h3><br>
+            <h4>Please login or singup if you want to use it!</h4><br>
+            <a href="/login"><button type="button" class="btn btn-primary">LOGIN</button></a>&nbsp&nbsp
+            <a href="{{ url_for_security('register') }}"><button type="button" class="btn btn-primary">REGISTER</button></a><br><br>
+        {%endif%}
+
+        {%if current_user.is_authenticated: %}
+            <h1>Welcome {{user.name}}!</h1>
+            <h4>You are logged in</h4><br>
+            <h4>You can use these links or the site navbar</h4>
+            <a href="/form"><button type="button" class="btn btn-primary">FORMS</button></a>&nbsp&nbsp
+            <a href="/profile"><button type="button" class="btn btn-primary">PROFILE</button></a>&nbsp&nbsp
+            <a href="/logout"><button type="button" class="btn btn-primary">LOGOUT</button></a><br><br>
+        {%endif%}
+    </div>
+
+    <br><br>
+{% endblock %}

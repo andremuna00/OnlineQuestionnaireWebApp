@@ -1,0 +1,65 @@
+{% extends "/security/base.html" %}
+{% block title %}Forms{% endblock %}
+{% block main_title%}Form List{%endblock main_title%}
+
+{% block content %}
+
+    <!--Header Page-->
+    <div class="container">
+        <h1>Welcome {{user.name}}</h1>
+        <h4>This is the list of the form you created</h4>
+    </div>
+
+    <div class="container">
+        <!--For all the forms of the current user:
+                   - list: each element: form name + EDIT + ANSWERS + COPY LINK (javascript) + DELETE (if not template original)
+            At the end: CREATE FORM-->
+        {% for f in forms %}
+            <form name="form_delete" method="POST">
+                <li>
+                    {{f.name}}&nbsp;&nbsp;&nbsp;
+                    <a href="/form/{{f.id}}/edit"><button type="button" class="btn btn-primary">EDIT</button></a>&nbsp;&nbsp;
+                    <a href="/form/{{f.id}}/answers"><button type="button" class="btn btn-primary">ANSWERS</button></a>&nbsp;&nbsp;
+                    <button onclick="copyToClipboard('http://127.0.0.1:5000/form/{{f.id}}/viewform')" type="button" class="btn btn-primary">COPY SHAREABLE LINK</button>
+
+                    {% if f.id != 1 and f.id != 2 and f.id != 3 and f.id !=4 %}
+                        <input type="hidden" name="form" value="{{f.id}}">
+                        &nbsp;&nbsp;<input type="submit" value="DELETE" class = "btn btn-danger">
+                    {% endif %}
+                </li>
+            </form>
+            <br><br>
+        {% endfor %}
+    </div>
+
+    <div class="container">
+        <a href="/form/form_create"><button type="button" class="btn btn-primary">CREATE FORM</button></a>
+        <br><br>
+    </div>
+
+    <br><br><br>
+
+    <script>
+        /*Function relative to the button for sharing link to answer the forms*/
+        const copyToClipboard = str => {
+              const el = document.createElement('textarea');
+              el.value = str;
+              el.setAttribute('readonly', '');
+              el.style.position = 'absolute';
+              el.style.left = '-9999px';
+              document.body.appendChild(el);
+              const selected =
+                document.getSelection().rangeCount > 0
+                  ? document.getSelection().getRangeAt(0)
+                  : false;
+              el.select();
+              document.execCommand('copy');
+              document.body.removeChild(el);
+              if (selected) {
+                document.getSelection().removeAllRanges();
+                document.getSelection().addRange(selected);
+              }
+              alert('Copied: '+ str);
+            };
+    </script>
+{% endblock %}

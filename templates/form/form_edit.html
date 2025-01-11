@@ -1,0 +1,101 @@
+{% extends "/security/base.html" %}
+{% block title %}Forms{% endblock %}
+{% block main_title %}Edit Form{% endblock %}
+
+{% block content %}
+    <!--Header Page-->
+    <div class="container">
+        <h1>Welcome {{user.name}}</h1>
+        <h4>This is the form: <b>{{form.name}}</b>. </h4>
+        <h6>{{form.description}}</h6>
+        <a href="/form/{{form.id}}/editMainInfo">
+            <button type="button" class="btn btn-green">EDIT FORM INFO</button>
+        </a><br><br>
+        <h4>Here the questions:</h4>
+    </div>
+
+    <div class="container">
+        <!--For all the question in the form:
+                                    - element in ol: name question + EDIT + DELETE
+                                                    mandatory (checkbox)
+                                                    allow file (checkbox)
+                                    - if current question is sinlge/multiple:
+                                            -sublist ul in wich each element is a possible answers
+            At the end: ADD QUESTION-->
+
+        <!-- The template Form can not be edited (1<=id<=4) -->
+        <ol>
+        {% for q, m in questions %}
+                    <li>
+                            <form name="delete_question" method="POST">
+                            <label>{{q.text}}</label>&nbsp;&nbsp;&nbsp;
+                {% if form.id > 4 %}
+                                <a href="/form/{{form.id}}/{{q.id}}">
+                                    <button type="button" class="btn btn-green">EDIT QUESTION</button>
+                                </a>&nbsp;&nbsp;
+                                <!-- Hidden form to send the id question when clicking on DELETE-->
+
+                                <input type="hidden" name="question" value="{{q.id}}">
+                                <input type="submit" value="DELETE" name="delete_button" class="btn btn-danger">
+                            </form>
+                    </li>
+
+                    {% if q.open %}
+                        <br><br>
+                        <!--Creating form for allows file (only Open Questions) -->
+                        <form id="allows_file_form_{{q.id}}" method="POST" action="/form/{{form.id}}/{{q.id}}/flag">
+                            <div class="form-check form-switch">
+                                <!--Hidden form necessary to understand which checkbox is changed -->
+                                <input type="hidden" name="allows_file_hidden" value="1">
+                                <input class="form-check-input" type="checkbox" name="checkBox_file" id="c_file_id_{{q.id}}"
+                                       onchange="document.getElementById('allows_file_form_{{q.id}}').submit()"
+                                       {%if m.has_file%} checked {%endif%}/>
+                                <label class="form-check-label" style="margin-top: 0.28rem;" for="c_file_id_{{q.id}}">Allows file </label>
+                            </div>
+                        </form>
+                    {% endif %}
+                {% endif %}
+            {% if q.single %}
+                <br>
+                {% for q1 in q.single%}
+                    <ul>
+                    {% for a in q1.possible_answers%}
+                        <li >{{a.content}}</li>
+                    {% endfor %}
+                    </ul><br>
+                {% endfor %}
+
+            {% elif q.multiple_choice %}
+                <br>
+                {% for q1 in q.multiple_choice%}
+                    <ul type="square">
+                    {% for a in q1.possible_answers%}
+                        <li >{{a.content}}</li>
+                    {% endfor %}
+                    </ul><br>
+                {% endfor %}
+            {% endif %}
+            {% if form.id > 4 %}
+            <!--Creating form for mandatory (all the Questions) -->
+            <form id="mandatory_form_{{q.id}}" method="POST" action="/form/{{form.id}}/{{q.id}}/flag">
+                <div class="form-check form-switch">
+                    <!--Hidden form necessary to understand which checkbox is changed -->
+                    <input type="hidden" name="mand_hidden" value="1">
+                    <input class="form-check-input" type="checkbox" name="checkBox_mandatory" id="c_mand_id_{{q.id}}"
+                           onchange="document.getElementById('mandatory_form_{{q.id}}').submit()"
+                           {%if m.mandatory%} checked {%endif%}/>
+                    <label class="form-check-label" style="margin-top: 0.28rem;" for="c_mand_id_{{q.id}}">Mandatory </label>
+                </div>
+            </form>
+            {% endif %}
+
+            <br><br>
+        {% endfor %}
+        </ol>
+
+        {% if form.id > 4 %}<a href="/form/{{form.id}}/add_question"><button type="button" class="btn btn-primary">ADD QUESTION</button></a>{% endif %}
+
+        <br><br><br><br>
+    </div>
+
+{% endblock %}

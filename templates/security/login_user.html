@@ -1,0 +1,27 @@
+{% extends "security/base.html" %}
+{% from "security/_macros.html" import render_field_with_errors, render_field, render_field_errors %}
+{% block main_title%}Login Page{%endblock main_title%}
+{% block content %}
+{% include "security/_messages.html" %}
+    <div class="container">
+        <h1>{{ _fsdomain('Login') }}</h1>
+        <div class="row">
+            <div class="form-group">
+                <div class="input-group">
+                    <form action="{{ url_for_security('login') }}" method="POST" name="login_user_form" class="form-group">
+                        {{ login_user_form.hidden_tag() }}
+                        {{ render_field_with_errors(login_user_form.email, class_="form-control") }}
+                        {{ render_field_with_errors(login_user_form.password, class_="form-control input-password") }}
+                        {{ render_field_with_errors(login_user_form.remember, class_="form-check") }}
+                        {{ render_field_errors(login_user_form.csrf_token) }}
+                        {{ render_field(login_user_form.submit, class="btn btn-primary") }}<br>
+                        <a href="{{ url_for_security('forgot_password', _external=True) }}">Forgot password?</a><br>
+                        Not yet signed up? Please <a href="{{url_for('security.register') }}">register for an account</a>.
+                        <br><br>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% include "security/_menu.html" %}
+{% endblock %}

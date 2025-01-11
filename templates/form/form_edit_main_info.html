@@ -1,0 +1,25 @@
+{% extends "/security/base.html" %}
+{% block title %}Edit Form Info{% endblock %}
+{% block main_title%}Edit Form Info{%endblock main_title%}
+{% block content %}
+
+    <!--Header Page-->
+    <div class="container">
+        <p><b>The current form main info are:</b></p>
+        <ul>
+            <li><b>Name:</b> {{form.name}}</li>
+            <li><b>Description:</b> {{form.description}}</li>
+        </ul>
+
+        <br><br><br>
+        <!--Allows to edit main form info-->
+        <form method="post" name="edit_form_main_info" class="form-group">
+          <label>Name: </label>
+          <input type="text" name="name" class="form-control" value="{{form.name}}" required>
+          <label>Description: </label>
+          <input type="text" name="description" class="form-control" value="{{form.description}}" required><br><br>
+          <input type="submit" value="Modify" class="btn btn-primary"><br><br>
+        </form>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "/security/base.html" %}
+{% block title %}User Edit Profile{% endblock %}
+{% block main_title%}Edit Profile{%endblock main_title%}
+{% block content %}
+
+<div class="container">
+    <form method="post" name="edit_form" class="form-group">
+      <label>Name: </label>
+      <input type="text" id="name" name="name" class="form-control" value="{{user.name}}">
+      <label>Surname: </label>
+      <input type="text" id="surname" name="surname" class="form-control" value="{{user.surname}}">
+      <label>Birthday Date: </label>
+      <input type="date" id="b_date" name="b_date" class="form-control" value="{{user.date}}">
+      <label>Username: </label>
+      <input type="text" id="username" name="username" class="form-control" value="{{user.username}}">
+      <input type="submit" value="Modify" class="btn btn-primary">
+    </form>
+</div>
+
+
+{% endblock %}

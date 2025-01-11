@@ -1,0 +1,137 @@
+{% extends "/security/base.html" %}
+{% block title %}Form Create{% endblock %}
+{% block main_title %}Form Creation{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="form-group">
+            <div class="input-group">
+                <form method="POST" name="create_form">
+                    <div class="form-group">
+                        <!--INTERACTIVE FORM:
+                            Import-> name-> description-> list of templates->Submit
+                            Not Import-> name-> description-> Sumbit
+                            -->
+
+                        <h3>Would you like to import a form template?</h3>
+                        <select name="import" class="form-select" onChange="import_template(this)">
+                            <option value="" selected> </option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+
+                        <br>
+
+                        <span id="name"></span>
+
+                        <span id="template list"></span>
+
+                        <span id="show form"></span>
+
+                        <br><br><span id="submit"></span>
+
+                    </div>
+
+                </form>
+                <script type='text/javascript'>
+
+                    /*variable for template*/
+                    let temp = false;
+
+                    function import_template(imp) {
+                        const v_imp = imp.value;
+
+                        /*clear all boxes*/
+                        const box = document.getElementById('name');
+                        const box2 = document.getElementById('template list');
+                        const box3 = document.getElementById('show form').innerHTML = '';
+                        const box4 = document.getElementById('submit').innerHTML = '';
+
+                        box.innerHTML = '';
+                        box2.innerHTML = '';
+
+                        temp = true;
+
+                        if (v_imp === "yes") {
+                            temp = false;
+                            /*Name + Description input text*/
+                            box.innerHTML = '<label>Form Name</label><br>\n' +
+                                '            <input type="text" name="name" class="form-control" required><br><br>' +
+                                '            <label>Descrizione Form</label><br>\n' +
+                                '            <input type="text" name="description" class="form-control" required><br><br>';
+
+                            /*Menu with template possible*/
+                            box2.innerHTML = '<label>Template Name</label><br>\n'+
+                                             '<select name="template" class="form-select" onChange="show_form(this); submit_f(this)">\n' +
+                                '                                <option value="" selected> </option>\n' +
+                                '                                {%for f in forms%}<option value={{f.id}}>{{f.name}}</option>\n{%endfor%}'+
+                                '                            </select>'
+                        } else if(v_imp === "no") {
+                            /*Name + Description input text*/
+                            box.innerHTML = '<label>Form Name</label><br>\n' +
+                                '            <input type="text" name="name" class="form-control" required><br><br>' +
+                                '            <label>Form Description</label><br>\n' +
+                                '            <input type="text" name="description" class="form-control" required><br><br>\n' +
+                                '            <input type="submit" value="Submit" class="btn btn-primary"><br><br>';
+                        }
+                    }
+
+                    function show_form(v) {
+                        const box = document.getElementById('show form');
+                        const value = v.value;
+
+                        /*For every type of the template show a preview: see form_edit for the HTML code to do this*/
+                        if(value !== ""){
+                            var str = '<div class="container">\n' +
+                                '        <p><b>Template Questions Peview:</b></p>\n'+
+                                '        <ol>\n' +
+                                '        {% for f in forms %}\n';
+                                 if ({{f.id}}==value) {
+                                str+='        {% for q in f.questions %}\n' +
+                                '            <li>{{q.text}}</li>\n' +
+                                '            {% if q.single %}\n' +
+                                '                {% for q1 in q.single%}\n' +
+                                '                    <ul>\n' +
+                                '                    {% for a in q1.possible_answers%}\n' +
+                                '                        <li >{{a.content}}</li>\n' +
+                                '                    {% endfor %}\n' +
+                                '                    </ul>\n' +
+                                '                {% endfor %}\n' +
+                                '            {% elif q.multiple_choice %}\n' +
+                                '                {% for q1 in q.multiple_choice%}\n' +
+                                '                    <ul type="square">\n' +
+                                '                    {% for a in q1.possible_answers%}\n' +
+                                '                        <li >{{a.content}}</li>\n' +
+                                '                    {% endfor %}\n' +
+                                '                    </ul>\n' +
+                                '                {% endfor %}\n' +
+                                '            {% endif %}\n' +
+                                '        {% endfor %}\n'
+                                 }
+                                str+='        {% endfor %}\n' +
+                                '        </ol>' +
+                                '</div>'
+                                box.innerHTML=str;
+                        }
+                        else{
+                            box.innerHTML='';
+                        }
+                    }
+
+                    /*show the submit button if a template is choose and the name and desc is not blank*/
+                    function submit_f(v) {
+                        const box = document.getElementById('submit');
+                        box.innerHTML='';
+
+                        const value = v.value;
+                        if(value !== "") {
+                            box.innerHTML = '<input type="submit" value="Submit" class="btn btn-primary"><br><br>';
+                        }
+                    }
+                </script>
+
+                <br><br><br><br>
+            </div>
+        </div>
+    </div>
+{% endblock %}

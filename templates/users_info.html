@@ -1,0 +1,56 @@
+{% extends "/security/base.html" %}
+{% block title %}Users Info{% endblock %}
+{% block main_title %}Admin Control Panel{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h4 style="color: red; margin-bottom: 3rem">Warning! Changes to users and forms can be dangerous, please pay attention!</h4>
+
+        <h5>Users:</h5>
+        <ul>
+        {% for u in users %}
+            {%if admin_role not in u.roles or superuser_role in current_user.roles%}
+            <li>
+                <b>Username:</b> {{u.username}}&nbsp;&nbsp;&nbsp;<b>Email:</b> {{u.email}}&nbsp;&nbsp;&nbsp;<b>ID:</b> {{u.id}}&nbsp;&nbsp;&nbsp;&nbsp;<b>Roles:</b> {%for r in u.roles%}{{r.name}}; {%endfor%}&nbsp;&nbsp;&nbsp;&nbsp;
+
+                {%if u.active%}
+                <a href="/users_info/{{u.id}}/disable"><button type="button" class="btn btn-primary">DISABLE</button></a>&nbsp;&nbsp;
+                {%else%}
+                <a href="/users_info/{{u.id}}/enable"><button type="button" class="btn btn-secondary">ENABLE</button></a>&nbsp;&nbsp;
+                {%endif%}
+
+                {%if superuser_role in current_user.roles%}
+                {%if admin_role in u.roles%}
+                <a id = "revoke" href="/users_info/{{u.id}}/revoke"><button type="button" class="btn btn-primary">REVOKE PRIVILEGES</button></a>&nbsp;&nbsp;
+                {%else%}
+                <a href='/users_info/{{u.id}}/grant'><button type='button' class='btn btn-secondary'>GRANT PRIVILEGES</button></a>&nbsp;&nbsp;
+                {%endif%}
+                {%endif%}
+
+                <a href="/users_info/{{u.id}}/delete"><button type="button" class="btn btn-danger">DELETE</button></a>
+                <br><br>
+                <h6>User forms:</h6>
+                <ul>
+                    {%for f in u.forms_created%}
+                        <li>
+                            <b>Form Name:</b> {{f.name}}&nbsp;&nbsp;&nbsp;<b>Creation Data:</b> {{f.dataCreation}}<br>
+                            <b>Description:</b> {{f.description}}<br><br>
+                            <a href="/form/{{f.id}}/edit"><button type="button" class="btn btn-green">EDIT</button></a>&nbsp;&nbsp;
+                            <a href="/users_info/form/{{f.id}}/delete"><button type="button" class="btn btn-danger">DELETE</button></a>
+                        </li><br><br>
+                    {%endfor%}
+                    {%if not u.forms_created%}
+                        <p>There are no forms present</p>
+                    {%endif%}
+                </ul>
+            </li>
+            <br><br>
+            {%endif%}
+        {%endfor%}
+            {%if (not users and superuser_role in current_user.roles) or (not std_user and superuser_role not in current_user.roles)%}
+                <p>There are no users present</p>
+            {%endif%}
+        </ul>
+    </div>
+
+{% endblock %}
